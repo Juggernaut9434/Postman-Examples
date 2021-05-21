@@ -5,7 +5,7 @@
  * Copyright (c) <DATE> Michael Mathews
  */
 
-
+// example json object to use.
 const json = {
     "glossary": {
         "title": "example glossary",
@@ -33,18 +33,21 @@ const json = {
 // from https://codegolf.stackexchange.com/a/195480
 let f=o=>Object.keys(o+''===o||o||0).flatMap(k=>[k,...f(o[k]).map(i=>k+'.'+i)]);
 
-let list = f(json);
-
 // for a collective test on attributes
-// e()
-const e = () => { 
+// exist(json)
+// prints assertion of pm test for key exist.
+const exist = (json) => { 
+    let list = f(json);
     for(let i=0;i<list.length;i++)
-    console.log(`pm.expect(${list[i]}).to.exist;\n`);
+        console.log(`pm.expect(${list[i]}).to.exist;\n`);
 }
 
 // for separate tests
-// t();
-const t = () => { for(let i=0;i<list.length;i++)
+// exist_test(json)
+// prints pm test for key exist
+const exist_test() = (json) => { 
+    let list = f(json);
+    for(let i=0;i<list.length;i++)
     {
         console.log(`pm.test('${list[i]}', () => {\
             \n\tpm.expect(${list[i]}).to.exist;\n});`);
@@ -53,6 +56,7 @@ const t = () => { for(let i=0;i<list.length;i++)
 
 // another solution, from https://stackoverflow.com/a/53620876
 // propertiesToArray(json);
+// returns full paths from a json object
 function propertiesToArray(obj) {
     const isObject = val =>
         typeof val === 'object' && !Array.isArray(val);
@@ -74,8 +78,10 @@ function propertiesToArray(obj) {
     return paths(obj);
 }
 
-// valuesToArray(json, 'json');
-function valuesToArray(obj, name='myj') {
+// valuesToArray(json);
+// returns array of values from the k-keys.
+function valuesToArray(obj) {
+    let name = Object.keys({obj})[0];
     let k = propertiesToArray(obj);
     let v = [];
     let evaled = '';
@@ -87,8 +93,10 @@ function valuesToArray(obj, name='myj') {
     return v;
 }
 
-// valueTest(json, 'json');
-const valueTest = (obj, name) => {
+// valueTest(json);
+// prints pm tests for each key value pair
+const valueTest = (obj) => {
+    let name = Object.keys({obj})[0];
     let k = propertiesToArray(obj);
     let v = valuesToArray(obj, name);
     for(let i=0;i<k.length;i++)
