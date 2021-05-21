@@ -1,6 +1,9 @@
-// Michael Mathews
-// May 2021
-// Execute: in node.js
+/* 
+ * Author:  Michael Mathews
+ * Date:    May 2021
+ * Execute: in node.js
+ * Copyright (c) <DATE> Michael Mathews
+ */
 
 
 const json = {
@@ -48,7 +51,7 @@ const t = () => { for(let i=0;i<list.length;i++)
     }
 }
 
-// another solution
+// another solution, from https://stackoverflow.com/a/53620876
 // propertiesToArray(json);
 function propertiesToArray(obj) {
     const isObject = val =>
@@ -74,7 +77,7 @@ function propertiesToArray(obj) {
 // valuesToArray(json, 'json');
 function valuesToArray(obj, name='myj') {
     let k = propertiesToArray(obj);
-    let v = []
+    let v = [];
     let evaled = '';
     for(let i=0;i<k.length;i++) {
         let str = name.concat('.', k[i]);

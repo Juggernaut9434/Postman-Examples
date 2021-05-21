@@ -3,6 +3,7 @@
  * Date:    May 2021
  * Testing for json property response, verify post body
  * and cookies verification. 
+ * Copyright (c) <DATE> Michael Mathews
  */
 
 // Receive a 200 status
