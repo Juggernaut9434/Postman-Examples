@@ -90,7 +90,7 @@ const valueTest = (obj, name) => {
     let v = valuesToArray(obj, name);
     for(let i=0;i<k.length;i++)
     {
-        if(typeof(k[i]) == "number")
+        if(Number(v[i]).toString() != "NaN")
             console.log(`pm.test('${k[i]}', () => {\
                 \n\tpm.expect(${k[i]}).to.eql(${v[i]});\n});`);
         else
