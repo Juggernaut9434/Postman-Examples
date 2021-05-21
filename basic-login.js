@@ -8,6 +8,8 @@
 // Receive a 200 status
 pm.test("Status Test", () => {
     pm.response.to.have.status(200);
+    if(pm.response.status != "OK")
+        throw new Error('Failed 200 Status');
 });
 
 // Make sure the Body is Sent with the correct Attributes
@@ -19,12 +21,12 @@ pm.test('Request Body', () => {
 
 // verify that we have the correct attributes in response
 pm.test('Response Attributes', () => {
-    const responseJSON = pm.response.json().token;
-    pm.expect(responseJSON).to.have.property('active');
-    pm.expect(responseJSON).to.have.property('code');
-    pm.expect(responseJSON).to.have.property('lastlogin');
-    pm.expect(responseJSON).to.have.property('name');
-    pm.expect(responseJSON).to.have.property('site');
+   const responseJSON = pm.response.json().token;
+    pm.expect(responseJSON.active).to.exist;
+    pm.expect(responseJSON.code).to.exist;
+    pm.expect(responseJSON.lastlogin).to.exist;
+    pm.expect(responseJSON.name).to.exist;
+    pm.expect(responseJSON.site).to.exist;
     // negative case
     pm.expect(responseJSON).to.not.have.property('bunnies');
 });
