@@ -19,16 +19,27 @@ pm.test('Request Body', () => {
     pm.expect(body).to.have.property('password');
 });
 
+let response = pm.response.json();
 // verify that we have the correct attributes in response
-pm.test('Response Attributes', () => {
-   const responseJSON = pm.response.json().token;
-    pm.expect(responseJSON.active).to.exist;
-    pm.expect(responseJSON.code).to.exist;
-    pm.expect(responseJSON.lastlogin).to.exist;
-    pm.expect(responseJSON.name).to.exist;
-    pm.expect(responseJSON.site).to.exist;
-    // negative case
-    pm.expect(responseJSON).to.not.have.property('bunnies');
+pm.test('token.active', () => {               
+	pm.expect(response.token.active).to.eql('michaelmathews@nugistics.io');
+});
+pm.test('token.code', () => {               
+	pm.expect(response.token.code).to.eql('e957df8112174e20a0b236f7d01af138');
+});
+pm.test('token.lastlogin', () => {               
+	pm.expect(response.token.lastlogin).to.exist;
+});
+pm.test('token.name', () => {               
+	pm.expect(response.token.name).to.eql('Michael Mathews');
+});
+pm.test('token.site', () => {               
+	pm.expect(response.token.site).to.eql(37);
+});
+
+// negative case
+pm.test('token.bunnies', () => {
+    pm.expect(response.token.bunnies).to.not.exist;
 });
 
 // Verify that cookies are generated
