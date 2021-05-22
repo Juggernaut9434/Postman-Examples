@@ -33,11 +33,27 @@ const json = {
 // from https://codegolf.stackexchange.com/a/195480
 let f=o=>Object.keys(o+''===o||o||0).flatMap(k=>[k,...f(o[k]).map(i=>k+'.'+i)]);
 
+// changes "this.cant.0.be.hard" to "this.cant[0].be.hard"
+function fix_f(array){
+    let v = []
+    for(let i=0;i<array.length;i++)
+    {
+        let ar = array[i].split('.');
+        let newString = '';
+        for(let j=0;j<ar.length;j++)
+        {
+            Number(ar[j]).toString() != "NaN" ? newString += `[${ar[j]}]` : newString += '.' + ar[j];
+        }
+        v.push(newString.substring(1));
+    }
+    return v;
+}
+
 // for a collective test on attributes
 // exist(json)
 // prints assertion of pm test for key exist.
 const exist = (json) => { 
-    let list = f(json);
+    let list = fix_f(f(json));
     for(let i=0;i<list.length;i++)
     {
         console.log(`pm.expect(obj.${list[i]}).to.exist;\n`);
@@ -48,7 +64,7 @@ const exist = (json) => {
 // exist_test(json)
 // prints pm test for key exist
 const exist_test = (json) => { 
-    let list = f(json);
+    let list = fix_f(f(json));
     for(let i=0;i<list.length;i++)
     {
         let result = eval(`json.${list[i]}`);
@@ -66,6 +82,7 @@ const exist_test = (json) => {
         }
     }
 }
+
 
 // another solution, from https://stackoverflow.com/a/53620876
 // propertiesToArray(json);
@@ -123,5 +140,5 @@ const valueTest = (obj) => {
     }
 }
 
-//exist_test(json);
+//exist_test(response);
 //valueTest(json);
