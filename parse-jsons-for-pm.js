@@ -39,18 +39,31 @@ let f=o=>Object.keys(o+''===o||o||0).flatMap(k=>[k,...f(o[k]).map(i=>k+'.'+i)]);
 const exist = (json) => { 
     let list = f(json);
     for(let i=0;i<list.length;i++)
-        console.log(`pm.expect(${list[i]}).to.exist;\n`);
+    {
+        console.log(`pm.expect(obj.${list[i]}).to.exist;\n`);
+    }
 }
 
 // for separate tests
 // exist_test(json)
 // prints pm test for key exist
-const exist_test() = (json) => { 
+const exist_test = (json) => { 
     let list = f(json);
     for(let i=0;i<list.length;i++)
     {
-        console.log(`pm.test('${list[i]}', () => {\
-            \n\tpm.expect(${list[i]}).to.exist;\n});`);
+        let result = eval(`json.${list[i]}`);
+        if(result == null)
+        {
+            let s = `${list[i]}`.split('.');
+            let first = s.slice(0, s.length-1);
+            let last = s[s.length-1];
+            console.log(`pm.test('${list[i]}', () => {\
+                \n\tpm.expect(obj.${first}).to.have.property('${last}');\n});`);
+        } 
+        else {
+            console.log(`pm.test('${list[i]}', () => {\
+                \n\tpm.expect(obj.${list[i]}).to.exist;\n});`);
+        }
     }
 }
 
@@ -103,9 +116,12 @@ const valueTest = (obj) => {
     {
         if(Number(v[i]).toString() != "NaN")
             console.log(`pm.test('${k[i]}', () => {\
-                \n\tpm.expect(${k[i]}).to.eql(${v[i]});\n});`);
+                \n\tpm.expect${name}.(${k[i]}).to.eql(${v[i]});\n});`);
         else
             console.log(`pm.test('${k[i]}', () => {\
-               \n\tpm.expect(${k[i]}).to.eql('${v[i]}');\n});`);
+               \n\tpm.expect(${name}.${k[i]}).to.eql('${v[i]}');\n});`);
     }
 }
+
+//exist_test(response);
+//valueTest(response);
