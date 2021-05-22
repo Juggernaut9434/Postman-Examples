@@ -7,6 +7,7 @@
 
 // example json object to use.
 const json = {
+    "test": null,
     "glossary": {
         "title": "example glossary",
         "GlossDiv": {
@@ -65,12 +66,27 @@ const exist = (json) => {
 // prints pm test for key exist
 const exist_test = (json) => { 
     let list = fix_f(f(json));
+    
+    // loop over all the Paths
     for(let i=0;i<list.length;i++)
     {
+        // value from keyPath
         let result = eval(`json.${list[i]}`);
-        if(result == null)
+        
+        // if result is null and not a child
+        if(result == null && `json.${list[i]}`.split('.').length == 2)
         {
+            // fix a previous bug so its not printed "--(response.).to--"
+            console.log(`pm.test('${list[i]}', () => {\
+                \n\tpm.expect(response).to.have.property('${list[i]}');\n});`);
+        }
+        
+        // if value is null, check if key exists only
+        else if(result == null)
+        {
+            // split the path into pieces by .
             let s = `${list[i]}`.split('.');
+            // put all except the last back together
             let first = s.slice(0, s.length-1).join('.');
             let last = s[s.length-1];
             console.log(`pm.test('${list[i]}', () => {\
@@ -140,5 +156,5 @@ const valueTest = (obj) => {
     }
 }
 
-//exist_test(response);
+//exist_test(json);
 //valueTest(json);
