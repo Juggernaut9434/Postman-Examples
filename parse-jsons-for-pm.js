@@ -2,12 +2,26 @@
  * Author:  Michael Mathews
  * Date:    May 2021
  * Execute: in node.js
- * Copyright (c) <DATE> Michael Mathews
+ * Copyright (c) <YEAR> Michael Mathews
  */
 
 // example json object to use.
 const json = {
     "test": null,
+    "driver": [
+        {
+            "id": 0,
+            "button": true,
+            "calendar": null,
+            "color": "blue"
+        },
+        {
+            "id": 1,
+            "button": false,
+            "calendar": null,
+            "color": "red"
+        }
+    ],
     "glossary": {
         "title": "example glossary",
         "GlossDiv": {
@@ -37,14 +51,22 @@ let f=o=>Object.keys(o+''===o||o||0).flatMap(k=>[k,...f(o[k]).map(i=>k+'.'+i)]);
 // changes "this.cant.0.be.hard" to "this.cant[0].be.hard"
 function fix_f(array){
     let v = []
+
+    // for each element in Path Array.
     for(let i=0;i<array.length;i++)
     {
+        // divide single Path into pieces
+        // ex: ["this", "cant", "0", "be", "hard"]
         let ar = array[i].split('.');
+
         let newString = '';
         for(let j=0;j<ar.length;j++)
         {
+            // If its a number, add brackets, otherwise add a dot.
             Number(ar[j]).toString() != "NaN" ? newString += `[${ar[j]}]` : newString += '.' + ar[j];
         }
+
+        // add to the array of new Paths
         v.push(newString.substring(1));
     }
     return v;
@@ -89,10 +111,13 @@ const exist_test = (json) => {
             // put all except the last back together
             let first = s.slice(0, s.length-1).join('.');
             let last = s[s.length-1];
+
+            // make the test
             console.log(`pm.test('${list[i]}', () => {\
                 \n\tpm.expect(response.${first}).to.have.property('${last}');\n});`);
         } 
         else {
+            // make the test
             console.log(`pm.test('${list[i]}', () => {\
                 \n\tpm.expect(response.${list[i]}).to.exist;\n});`);
         }
@@ -100,9 +125,9 @@ const exist_test = (json) => {
 }
 
 
-// another solution, from https://stackoverflow.com/a/53620876
+// from https://stackoverflow.com/a/53620876
+// returns full paths from a json object that has values.
 // propertiesToArray(json);
-// returns full paths from a json object
 function propertiesToArray(obj) {
     const isObject = val =>
         typeof val === 'object' && !Array.isArray(val);
@@ -127,13 +152,19 @@ function propertiesToArray(obj) {
 // valuesToArray(json);
 // returns array of values from the k-keys.
 function valuesToArray(obj) {
-    let name = Object.keys({obj})[0];
+
+    // find all the keys that have direct values
     let k = propertiesToArray(obj);
     let v = [];
+
+    // build a new string
     let evaled = '';
     for(let i=0;i<k.length;i++) {
-        let str = name.concat('.', k[i]);
+        // break it down for some reason
+        let str = 'name'.concat('.', k[i]);
+        // definite resolution of evaled as String
         evaled = eval(str, String);
+        // add evaled to array of Values.
         v.push(evaled);
     }
     return v;
@@ -142,19 +173,19 @@ function valuesToArray(obj) {
 // valueTest(json);
 // prints pm tests for each key value pair
 const valueTest = (obj) => {
-    let name = Object.keys({obj})[0];
     let k = propertiesToArray(obj);
     let v = valuesToArray(obj, name);
     for(let i=0;i<k.length;i++)
     {
+        // if the value is not a String, remove the quotations
         if(Number(v[i]).toString() != "NaN")
             console.log(`pm.test('${k[i]}', () => {\
-                \n\tpm.expect${name}.(${k[i]}).to.eql(${v[i]});\n});`);
+                \n\tpm.expect(obj.(${k[i]}).to.eql(${v[i]});\n});`);
         else
             console.log(`pm.test('${k[i]}', () => {\
-               \n\tpm.expect(${name}.${k[i]}).to.eql('${v[i]}');\n});`);
+               \n\tpm.expect(obj.${k[i]}).to.eql('${v[i]}');\n});`);
     }
 }
 
-//exist_test(json);
-//valueTest(json);
+//exist_test(testjson);
+//valueTest(testjson);
