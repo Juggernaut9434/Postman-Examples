@@ -55,14 +55,14 @@ const exist_test = (json) => {
         if(result == null)
         {
             let s = `${list[i]}`.split('.');
-            let first = s.slice(0, s.length-1);
+            let first = s.slice(0, s.length-1).join('.');
             let last = s[s.length-1];
             console.log(`pm.test('${list[i]}', () => {\
-                \n\tpm.expect(obj.${first}).to.have.property('${last}');\n});`);
+                \n\tpm.expect(response.${first}).to.have.property('${last}');\n});`);
         } 
         else {
             console.log(`pm.test('${list[i]}', () => {\
-                \n\tpm.expect(obj.${list[i]}).to.exist;\n});`);
+                \n\tpm.expect(response.${list[i]}).to.exist;\n});`);
         }
     }
 }
@@ -123,5 +123,5 @@ const valueTest = (obj) => {
     }
 }
 
-//exist_test(response);
-//valueTest(response);
+//exist_test(json);
+//valueTest(json);
