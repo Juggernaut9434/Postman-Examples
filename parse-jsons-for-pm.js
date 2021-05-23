@@ -133,7 +133,7 @@ function exist_test(json) {
 function valuesToArray(obj) {
 
     // find all the keys that have direct values
-    let k = fixed_f(f(obj));
+    let k = fix_f(f(obj));
     let v = [];
 
     // build a new string
@@ -153,12 +153,12 @@ function valuesToArray(obj) {
 // string pm tests for each key value pair
 function valueTest(obj) {
     let strArr = [];
-    let k = fixed_f(f(obj));
+    let k = fix_f(f(obj));
     let v = valuesToArray(obj);
     for(let i=0;i<k.length;i++)
     {
         // if result is null
-        if(v[i] == null)
+        if(v[i] == null || typeof(v[i]) == "object")
         {
             // split the path into pieces by .
             let s = `${k[i]}`.split('.');
@@ -184,8 +184,8 @@ function valueTest(obj) {
 // use case examples
 //const et = exist_test(testjson);
 //et.forEach( (str) => { console.log(str); });
-const vt = valueTest(testjson);
-vt.forEach( (str) => { console.log(str); });
+//const vt = valueTest(testjson);
+//vt.forEach( (str) => { console.log(str); });
 
 // exports
 module.exports = {exist_test, valueTest};
