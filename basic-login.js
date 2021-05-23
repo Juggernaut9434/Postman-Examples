@@ -15,18 +15,28 @@ pm.test("Status Test", () => {
         throw new Error('Failed 200 Status');
 });
 
+// teste and save response as JSON
 pm.test("JSON Body", () => {
     pm.response.to.be.withBody;
     pm.response.to.be.json;
+    response = pm.response.json();
+});
+
+// store id in environment
+pm.test("ID to Environment", () => {
+    pm.expect(response.token).to.have.property('code');
+    postman.setEnvironmentVariable("driver-id", response.driver[0].id);
 });
 
 // Make sure the Body is Sent with the correct Attributes
+// PRE-TEST
 pm.test('Request Body', () => {
     const body = pm.request.body.formdata.toObject(true);
     pm.expect(body).to.have.property('email');
     pm.expect(body).to.have.property('password');
 });
 
+// Json Tests
 pm.test('test', () => {                    
 	pm.expect(response).to.have.property('test');
 });
