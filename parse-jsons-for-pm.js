@@ -73,10 +73,11 @@ function fix_f(array){
     return v;
 }
 
-// for separate tests
-// exist_test(json)
-// prints pm test for key exist
-const exist_test = (json) => { 
+// for a collective test on attributes
+// exist(json)
+// returns string of pm test line
+function exist(json) { 
+    let strArr = [];
     let list = fix_f(f(json));
     
     // loop over all the Paths
@@ -89,8 +90,7 @@ const exist_test = (json) => {
         if(result == null && `json.${element}`.split('.').length == 2)
         {
             // fix a previous bug so its not printed "--(response.).to--"
-            console.log(`pm.test('${element}', () => {\
-                \n\tpm.expect(response).to.have.property('${element}');\n});`);
+            strArr.push(`pm.expect(response).to.have.property('${element}');`);
         }
         
         // if value is null, check if key exists only
@@ -103,39 +103,29 @@ const exist_test = (json) => {
             let last = s[s.length-1];
 
             // make the test
-            console.log(`pm.test('${element}', () => {\
-                \n\tpm.expect(response.${first}).to.have.property('${last}');\n});`);
+            strArr.push(`pm.expect(response.${first}).to.have.property('${last}');`);
         } 
         else {
             // make the test
-            console.log(`pm.test('${element}', () => {\
-                \n\tpm.expect(response.${element}).to.exist;\n});`);
+            strArr.push(`pm.expect(response.${element}).to.exist;`);
         }
-    }
+    } // out of for loop
+    return strArr;
 }
 
-// from https://stackoverflow.com/a/53620876
-// returns full paths from a json object that has values.
-// propertiesToArray(json);
-function propertiesToArray(obj) {
-    const isObject = val =>
-        typeof val === 'object' && !Array.isArray(val);
-
-    const addDelimiter = (a, b) =>
-        a ? `${a}.${b}` : b;
-
-    const paths = (obj2 = {}, head = '') => {
-        return Object.entries(obj2)
-            .reduce((product, [key, value]) => 
-                {
-                    let fullPath = addDelimiter(head, key)
-                    return isObject(value) ?
-                        product.concat(paths(value, fullPath))
-                    : product.concat(fullPath)
-                }, []);
-    }
-
-    return paths(obj);
+// for separate tests
+// exist_test(json)
+// return string of pm test for key exist
+function exist_test(json) { 
+    let testArr = [];
+    let list = exist(json);
+    let paths = fix_f(f(json));
+    
+    // loop over all the Paths
+    list.forEach( (str, index) => {
+        testArr.push(`pm.test("${paths[index]}", () => {\n\t${str}\n});`)
+    });
+    return testArr;
 }
 
 // valuesToArray(json);
@@ -143,14 +133,14 @@ function propertiesToArray(obj) {
 function valuesToArray(obj) {
 
     // find all the keys that have direct values
-    let k = propertiesToArray(obj);
+    let k = fixed_f(f(obj));
     let v = [];
 
     // build a new string
     let evaled = '';
     for(const key of k) {
         // break it down for some reason
-        let str = 'name'.concat('.', key);
+        let str = 'obj'.concat('.', key);
         // definite resolution of evaled as String
         evaled = eval(str, String);
         // add evaled to array of Values.
@@ -160,21 +150,42 @@ function valuesToArray(obj) {
 }
 
 // valueTest(json);
-// prints pm tests for each key value pair
-const valueTest = (obj) => {
-    let k = propertiesToArray(obj);
+// string pm tests for each key value pair
+function valueTest(obj) {
+    let strArr = [];
+    let k = fixed_f(f(obj));
     let v = valuesToArray(obj);
     for(let i=0;i<k.length;i++)
     {
+        // if result is null
+        if(v[i] == null)
+        {
+            // split the path into pieces by .
+            let s = `${k[i]}`.split('.');
+            // put all except the last back together
+            let first = s.slice(0, s.length-1).join('.');
+            let last = s[s.length-1];
+
+            // make the test
+            strArr.push(`pm.test('${k[i]}', () => {\
+                \n\tpm.expect(response.${first}).to.have.property('${last}');\n});`);
+        }
         // if the value is not a String, remove the quotations
-        if(Number(v[i]).toString() != "NaN")
-            console.log(`pm.test('${k[i]}', () => {\
+        else if(Number(v[i]).toString() != "NaN")
+            strArr.push(`pm.test('${k[i]}', () => {\
                 \n\tpm.expect(obj.(${k[i]}).to.eql(${v[i]});\n});`);
         else
-            console.log(`pm.test('${k[i]}', () => {\
+            strArr.push(`pm.test('${k[i]}', () => {\
                \n\tpm.expect(obj.${k[i]}).to.eql('${v[i]}');\n});`);
     }
+    return strArr;
 }
 
-exist_test(testjson);
-//valueTest(testjson);
+// use case examples
+//const et = exist_test(testjson);
+//et.forEach( (str) => { console.log(str); });
+const vt = valueTest(testjson);
+vt.forEach( (str) => { console.log(str); });
+
+// exports
+module.exports = {exist_test, valueTest};
