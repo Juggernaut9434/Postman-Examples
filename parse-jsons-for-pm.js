@@ -151,7 +151,7 @@ function valuesToArray(obj) {
 
 // valueTest(json);
 // string pm tests for each key value pair
-function valueTest(obj) {
+function value_test(obj) {
     let strArr = [];
     let k = fix_f(f(obj));
     let v = valuesToArray(obj);
@@ -184,8 +184,8 @@ function valueTest(obj) {
 // use case examples
 //const et = exist_test(testjson);
 //et.forEach( (str) => { console.log(str); });
-//const vt = valueTest(testjson);
+//const vt = value_test(testjson);
 //vt.forEach( (str) => { console.log(str); });
 
 // exports
-module.exports = {exist_test, valueTest};
+module.exports = {exist_test, value_test};
