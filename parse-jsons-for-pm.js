@@ -73,17 +73,6 @@ function fix_f(array){
     return v;
 }
 
-// for a collective test on attributes
-// exist(json)
-// prints assertion of pm test for key exist.
-const exist = (json) => { 
-    let list = fix_f(f(json));
-    for(const element of list)
-    {
-        console.log(`pm.expect(obj.${element}).to.exist;\n`);
-    }
-}
-
 // for separate tests
 // exist_test(json)
 // prints pm test for key exist
@@ -124,7 +113,6 @@ const exist_test = (json) => {
         }
     }
 }
-
 
 // from https://stackoverflow.com/a/53620876
 // returns full paths from a json object that has values.
