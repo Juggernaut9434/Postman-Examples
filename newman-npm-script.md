@@ -1,11 +1,13 @@
 # Newman NPM Script
 
 The abstract view of it is best
-described as running newman
-as a node package 
-then passing in environment 
-variables from the script command
-which are parsed in by command line.
+described as 
+1. running newman as a node package 
+1. passing in environment variables from the script command
+ 	- which are parsed in by command line.
+
+This is made as a template and __not__ to be 
+copy pasted and downloaded.
 
 It is important to keep the literals
 in **single quotes** and variable strings
@@ -16,9 +18,6 @@ example on the cli
 ```shell
 npm run pm:run-tests --username='hello'
 ```
-
-This is made as a template and __not__ to be 
-copy pasted and downloaded.
 
 ## Required files
 
