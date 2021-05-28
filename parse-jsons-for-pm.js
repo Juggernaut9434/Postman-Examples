@@ -5,44 +5,8 @@
 // Copyright (c) <YEAR> Michael Mathews
 //
 
-// example json object to use.
-const testjson = {
-    "test": null,
-    "driver": [
-        {
-            "id": 0,
-            "button": true,
-            "calendar": null,
-            "color": "blue"
-        },
-        {
-            "id": 1,
-            "button": false,
-            "calendar": null,
-            "color": "red"
-        }
-    ],
-    "glossary": {
-        "title": "example glossary",
-        "GlossDiv": {
-            "title": "S",
-            "GlossList": {
-                "GlossEntry": {
-                    "ID": "SGML",
-                    "SortAs": "SGML",
-                    "GlossTerm": "Standard Generalized Markup Language",
-                    "Acronym": "SGML",
-                    "Abbrev": "ISO 8879:1986",
-                    "GlossDef": {
-                        "para": "A meta-markup language, used to create markup languages such as DocBook.",
-                        "GlossSeeAlso": ["GML", "XML"]
-                    },
-                    "GlossSee": "markup"
-                }
-            }
-        }
-    }
-};
+// pull json data from file
+const data = require('./example.json');
 
 
 // from https://codegolf.stackexchange.com/a/195480
@@ -191,10 +155,10 @@ function value_test(obj) {
 }
 
 // use case examples
-//const et = exist_test(testjson);
+//const et = exist_test(jsonData);
 //et.forEach( (str) => { console.log(str); });
-const vt = value_test(testjson);
-vt.forEach( (str) => { console.log(str); });
+//const vt = value_test(testjson);
+//vt.forEach( (str) => { console.log(str); });
 
 // exports
 module.exports = {exist_test, value_test};
