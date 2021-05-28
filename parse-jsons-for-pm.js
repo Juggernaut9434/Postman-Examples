@@ -155,9 +155,9 @@ function value_test(obj) {
 }
 
 // use case examples
-//const et = exist_test(jsonData);
+//const et = exist_test(data);
 //et.forEach( (str) => { console.log(str); });
-//const vt = value_test(testjson);
+//const vt = value_test(data);
 //vt.forEach( (str) => { console.log(str); });
 
 // exports
