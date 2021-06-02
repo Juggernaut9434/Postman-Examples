@@ -123,21 +123,20 @@ function value_test(obj) {
         let first = s.slice(0, s.length-1).join('.');
         let last = s[s.length-1];
 
-        // if result is null or object
-        if(v[i] == null || typeof(v[i]) == "object")
+        // if no children, remove the extra dot.
+        if(k[i].split('.').length == 1 && (v[i] == null || typeof(v[i]) == "object"))
         {
-            // if no children, remove the extra dot.
-            if(k[i].split('.').length == 1)
-            {
-                // make the test
-                strArr.push(`pm.test('${k[i]}', () => {\
-                    \n\tpm.expect(response).to.have.property('${k[i]}');\n});`);
-            }
-            else {
-                // make the test
-                strArr.push(`pm.test('${k[i]}', () => {\
-                    \n\tpm.expect(response.${first}).to.have.property('${last}');\n});`);
-            }
+            // make the test
+            strArr.push(`pm.test('${k[i]}', () => {\
+                \n\tpm.expect(response).to.have.property('${k[i]}');\n});`);
+        }
+
+        // if result is null or object
+        else if(v[i] == null || typeof(v[i]) == "object")
+        {
+            // make the test
+            strArr.push(`pm.test('${k[i]}', () => {\
+                \n\tpm.expect(response.${first}).to.have.property('${last}');\n});`);
         }
         // if the value is not a String, remove the quotations
         else if(Number(v[i]).toString() != "NaN")
@@ -145,7 +144,7 @@ function value_test(obj) {
                 \n\tpm.expect(response.${first}).to.have.property('${last}', ${v[i]});\n});`);
         else
             strArr.push(`pm.test('${k[i]}', () => {\
-               \n\tpm.expect(response.${first}).to.have.property('${last}', ${v[i]}');\n});`);
+               \n\tpm.expect(response.${first}).to.have.property('${last}', '${v[i]}');\n});`);
     }
     return strArr;
 }
@@ -153,8 +152,8 @@ function value_test(obj) {
 // use case examples
 //const et = exist_test(data);
 //et.forEach( (str) => { console.log(str); });
-//const vt = value_test(data);
-//vt.forEach( (str) => { console.log(str); });
+const vt = value_test(data);
+vt.forEach( (str) => { console.log(str); });
 
 // exports
 module.exports = {exist_test, value_test};
