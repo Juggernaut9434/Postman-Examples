@@ -132,15 +132,15 @@ function value_test(obj) {
         let last = s[s.length-1];
 
         // if no children, remove the extra dot.
-        if(k[i].split('.').length == 1 && (v[i] == null || typeof(v[i]) == "object"))
+        if(k[i].split('.').length == 1 && (v[i] == null || typeof(v[i]) == "object" || isDate(v[i])))
         {
-            // make the test
-            strArr.push(`pm.test('${k[i]}', () => {\
-                \n\tpm.expect(response).to.have.property('${k[i]}');\n});`);
+                // make the test
+                strArr.push(`pm.test('${k[i]}', () => {\
+                    \n\tpm.expect(response).to.have.property('${k[i]}');\n});`);
         }
 
         // if result is null or object
-        else if(v[i] == null || typeof(v[i]) == "object")
+        else if(v[i] == null || typeof(v[i]) == "object" || isDate(v[i]))
         {
             // make the test
             strArr.push(`pm.test('${k[i]}', () => {\
