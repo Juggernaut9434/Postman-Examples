@@ -9,6 +9,14 @@
 const data = require('./example.json');
 
 
+// Returns boolean if it is a Date according to Javascript
+// when given ["helloString", 1, "1", "2012-04-23T18:25:43.511Z", "01/01/1999"]
+// it returns   F, F,  F,  T,  T
+const isDate = (s) => isNaN(Number(s).toString()) 
+    && !isNaN(Date.parse(s)) 
+    && !isNaN(Number(Date.parse(s)).toString());
+
+
 // from https://codegolf.stackexchange.com/a/195480
 // returns list of jsonPaths
 let f=o=>Object.keys(o+''===o||o||0).flatMap(k=>[k,...f(o[k]).map(i=>k+'.'+i)]);
@@ -57,8 +65,8 @@ function exist(json) {
             strArr.push(`pm.expect(response).to.have.property('${element}');`);
         }
         
-        // if value is null, check if key exists only
-        else if(result == null)
+        // if otherwise
+        else
         {
             // split the path into pieces by .
             let s = `${element}`.split('.');
@@ -69,10 +77,6 @@ function exist(json) {
             // make the test
             strArr.push(`pm.expect(response.${first}).to.have.property('${last}');`);
         } 
-        else {
-            // make the test
-            strArr.push(`pm.expect(response.${element}).to.exist;`);
-        }
     } // out of for loop
     return strArr;
 }
@@ -121,35 +125,34 @@ function value_test(obj) {
     let v = valuesToArray(obj);
     for(let i=0;i<k.length;i++)
     {
-        // if result is null
-        if(v[i] == null || typeof(v[i]) == "object")
+        // split the path into pieces by .
+        let s = `${k[i]}`.split('.');
+        // put all except the last back together
+        let first = s.slice(0, s.length-1).join('.');
+        let last = s[s.length-1];
+
+        // if no children, remove the extra dot.
+        if(k[i].split('.').length == 1 && (v[i] == null || typeof(v[i]) == "object" || isDate(v[i])))
         {
-            // if no children, remove the extra dot.
-            if(k[i].split('.').length == 1)
-            {
                 // make the test
                 strArr.push(`pm.test('${k[i]}', () => {\
                     \n\tpm.expect(response).to.have.property('${k[i]}');\n});`);
-            }
-            else {
-                // split the path into pieces by .
-                let s = `${k[i]}`.split('.');
-                // put all except the last back together
-                let first = s.slice(0, s.length-1).join('.');
-                let last = s[s.length-1];
+        }
 
-                // make the test
-                strArr.push(`pm.test('${k[i]}', () => {\
-                    \n\tpm.expect(response.${first}).to.have.property('${last}');\n});`);
-            }
+        // if result is null or object
+        else if(v[i] == null || typeof(v[i]) == "object" || isDate(v[i]))
+        {
+            // make the test
+            strArr.push(`pm.test('${k[i]}', () => {\
+                \n\tpm.expect(response.${first}).to.have.property('${last}');\n});`);
         }
         // if the value is not a String, remove the quotations
         else if(Number(v[i]).toString() != "NaN")
             strArr.push(`pm.test('${k[i]}', () => {\
-                \n\tpm.expect(response.${k[i]}).to.eql(${v[i]});\n});`);
+                \n\tpm.expect(response.${first}).to.have.property('${last}', ${v[i]});\n});`);
         else
             strArr.push(`pm.test('${k[i]}', () => {\
-               \n\tpm.expect(response.${k[i]}).to.eql('${v[i]}');\n});`);
+               \n\tpm.expect(response.${first}).to.have.property('${last}', '${v[i]}');\n});`);
     }
     return strArr;
 }
@@ -157,8 +160,8 @@ function value_test(obj) {
 // use case examples
 //const et = exist_test(data);
 //et.forEach( (str) => { console.log(str); });
-//const vt = value_test(data);
-//vt.forEach( (str) => { console.log(str); });
+const vt = value_test(data);
+vt.forEach( (str) => { console.log(str); });
 
 // exports
 module.exports = {exist_test, value_test};
