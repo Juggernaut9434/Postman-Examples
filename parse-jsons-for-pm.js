@@ -57,8 +57,8 @@ function exist(json) {
             strArr.push(`pm.expect(response).to.have.property('${element}');`);
         }
         
-        // if value is null, check if key exists only
-        else if(result == null)
+        // if otherwise
+        else
         {
             // split the path into pieces by .
             let s = `${element}`.split('.');
@@ -69,10 +69,6 @@ function exist(json) {
             // make the test
             strArr.push(`pm.expect(response.${first}).to.have.property('${last}');`);
         } 
-        else {
-            // make the test
-            strArr.push(`pm.expect(response.${element}).to.exist;`);
-        }
     } // out of for loop
     return strArr;
 }
