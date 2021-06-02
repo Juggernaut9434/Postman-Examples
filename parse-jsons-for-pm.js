@@ -6,7 +6,7 @@
 //
 
 // pull json data from file
-const data = require('./example.json');
+const data = require('./my.test.json');
 
 
 // Returns boolean if it is a Date according to Javascript
@@ -58,8 +58,14 @@ function exist(json) {
         // value from keyPath
         let result = eval(`json.${element}`);
         
+
+        if(typeof(result) == "object") 
+        {
+                strArr.push(`pm.expect(response.${element}).to.exist;`)
+        } 
+
         // if result is null and not a child
-        if(result == null && `json.${element}`.split('.').length == 2)
+        else if(`${element}`.split('.').length == 1)
         {
             // fix a previous bug so its not printed "--(response.).to--"
             strArr.push(`pm.expect(response).to.have.property('${element}');`);
@@ -158,10 +164,10 @@ function value_test(obj) {
 }
 
 // use case examples
-//const et = exist_test(data);
-//et.forEach( (str) => { console.log(str); });
-const vt = value_test(data);
-vt.forEach( (str) => { console.log(str); });
+const et = exist_test(data);
+et.forEach( (str) => { console.log(str); });
+//const vt = value_test(data);
+//vt.forEach( (str) => { console.log(str); });
 
 // exports
 module.exports = {exist_test, value_test};
