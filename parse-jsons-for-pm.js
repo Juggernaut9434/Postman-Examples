@@ -9,6 +9,14 @@
 const data = require('./example.json');
 
 
+// Returns boolean if it is a Date according to Javascript
+// when given ["helloString", 1, "1", "2012-04-23T18:25:43.511Z", "01/01/1999"]
+// it returns   F, F,  F,  T,  T
+const isDate = (s) => isNaN(Number(s).toString()) 
+    && !isNaN(Date.parse(s)) 
+    && !isNaN(Number(Date.parse(s)).toString());
+
+
 // from https://codegolf.stackexchange.com/a/195480
 // returns list of jsonPaths
 let f=o=>Object.keys(o+''===o||o||0).flatMap(k=>[k,...f(o[k]).map(i=>k+'.'+i)]);
