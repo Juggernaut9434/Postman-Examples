@@ -117,7 +117,13 @@ function value_test(obj) {
     let v = valuesToArray(obj);
     for(let i=0;i<k.length;i++)
     {
-        // if result is null
+        // split the path into pieces by .
+        let s = `${k[i]}`.split('.');
+        // put all except the last back together
+        let first = s.slice(0, s.length-1).join('.');
+        let last = s[s.length-1];
+
+        // if result is null or object
         if(v[i] == null || typeof(v[i]) == "object")
         {
             // if no children, remove the extra dot.
@@ -128,12 +134,6 @@ function value_test(obj) {
                     \n\tpm.expect(response).to.have.property('${k[i]}');\n});`);
             }
             else {
-                // split the path into pieces by .
-                let s = `${k[i]}`.split('.');
-                // put all except the last back together
-                let first = s.slice(0, s.length-1).join('.');
-                let last = s[s.length-1];
-
                 // make the test
                 strArr.push(`pm.test('${k[i]}', () => {\
                     \n\tpm.expect(response.${first}).to.have.property('${last}');\n});`);
@@ -142,10 +142,10 @@ function value_test(obj) {
         // if the value is not a String, remove the quotations
         else if(Number(v[i]).toString() != "NaN")
             strArr.push(`pm.test('${k[i]}', () => {\
-                \n\tpm.expect(response.${k[i]}).to.eql(${v[i]});\n});`);
+                \n\tpm.expect(response.${first}).to.have.property('${last}', ${v[i]});\n});`);
         else
             strArr.push(`pm.test('${k[i]}', () => {\
-               \n\tpm.expect(response.${k[i]}).to.eql('${v[i]}');\n});`);
+               \n\tpm.expect(response.${first}).to.have.property('${last}', ${v[i]}');\n});`);
     }
     return strArr;
 }
