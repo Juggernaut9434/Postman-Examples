@@ -85,7 +85,7 @@ function exist(json) {
                     // if result is null and not a child
             if(`${element}`.split('.').length == 2)
             {
-                // fix a previous bug so its not printed "--(response.).to--"
+                // fix a previous bug so its not printed "--(response).to--"
                 element.startsWith('[') ? 
                     strArr.push(`pm.expect(response${first}).to.have.property('${last}');`) :
                     strArr.push(`pm.expect(response).to.have.property('${element}');`);
@@ -94,7 +94,7 @@ function exist(json) {
             {
 
                 // make the test
-                strArr.push(`pm.expect(response.${first}).to.have.property('${last}');`);
+                strArr.push(`pm.expect(response${first}).to.have.property('${last}');`);
             }
         } 
     } // out of for loop
