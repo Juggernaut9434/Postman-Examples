@@ -6,7 +6,7 @@
 //
 
 // pull json data from file
-const data = require('./my.test.json');
+const data = require('./example.json');
 
 
 // Returns boolean if it is a Date according to Javascript
@@ -31,16 +31,16 @@ function fix_f(array){
         // divide single Path into pieces
         // ex: ["this", "cant", "0", "be", "hard"]
         let ar = element.split('.');
-
         let newString = [];
+
         for(const addr of ar)
         {
-            // If its a number, add brackets, otherwise add a dot.
-            Number(addr).toString() != "NaN" ? newString.push(`[${addr}]`) : newString.push(`.${addr}`);
+                // If its a number, add brackets, otherwise add a dot.
+                Number(addr).toString() != "NaN" ? newString.push(`[${addr}]`) : newString.push(`.${addr}`);
         }
 
         // add to the array of new Paths
-        v.push(newString.join('').substring(1));
+        v.push(newString.join(''));
     }
     return v;
 }
@@ -56,19 +56,20 @@ function exist(json) {
     for(const element of list)
     {
         // value from keyPath
-        let result = eval(`json.${element}`);
+        let result = eval(`json${element}`);
         
 
-        if(typeof(result) == "object") 
+        if(typeof(result) == "object" && result != null) 
         {
-                strArr.push(`pm.expect(response.${element}).to.exist;`)
+            element.startsWith('[') ? 
+                strArr.push(`pm.expect(response${element}).to.exist;`) : 
+                strArr.push(`pm.expect(response.${element}).to.exist;`);
         } 
 
         // if result is null and not a child
         else if(`${element}`.split('.').length == 1)
         {
-            // fix a previous bug so its not printed "--(response.).to--"
-            strArr.push(`pm.expect(response).to.have.property('${element}');`);
+            strArr.push(`pm.expect(response${element}).to.exist;`);
         }
         
         // if otherwise
@@ -80,8 +81,22 @@ function exist(json) {
             let first = s.slice(0, s.length-1).join('.');
             let last = s[s.length-1];
 
-            // make the test
-            strArr.push(`pm.expect(response.${first}).to.have.property('${last}');`);
+                    // if result is null and not a child
+            if(`${element}`.split('.').length == 2)
+            {
+                // fix a previous bug so its not printed "--(response.).to--"
+                element.startsWith('[') ? 
+                    strArr.push(`pm.expect(response${first}).to.have.property('${last}');`) :
+                    strArr.push(`pm.expect(response).to.have.property('${element}');`);
+            }
+            else
+            {
+
+                // make the test
+                element.startsWith('[') ? 
+                    strArr.push(`pm.expect(response${first}).to.have.property('${last}');`):
+                    strArr.push(`pm.expect(response.${first}).to.have.property('${last}');`);
+            }
         } 
     } // out of for loop
     return strArr;
@@ -145,7 +160,7 @@ function value_test(obj) {
                     \n\tpm.expect(response).to.have.property('${k[i]}');\n});`);
         }
 
-        // if result is null or object
+        // if result is null or object or date
         else if(v[i] == null || typeof(v[i]) == "object" || isDate(v[i]))
         {
             // make the test
