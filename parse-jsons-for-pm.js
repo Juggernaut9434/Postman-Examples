@@ -22,7 +22,8 @@ const isDate = (s) => isNaN(Number(s).toString())
 let f=o=>Object.keys(o+''===o||o||0).flatMap(k=>[k,...f(o[k]).map(i=>k+'.'+i)]);
 
 // changes "this.cant.0.be.hard" to "this.cant[0].be.hard"
-function fix_f(array){
+function fix_f(json){
+    let array = f(json);
     let v = [];
 
     // for each element in Path Array.
@@ -50,7 +51,7 @@ function fix_f(array){
 // returns string of pm test line
 function exist(json) { 
     let strArr = [];
-    let list = fix_f(f(json));
+    let list = fix_f(json);
     
     // loop over all the Paths
     for(const element of list)
@@ -108,7 +109,7 @@ function exist(json) {
 function exist_test(json) { 
     let testArr = [];
     let list = exist(json);
-    let paths = fix_f(f(json));
+    let paths = fix_f(json);
     
     // loop over all the Paths
     list.forEach( (str, index) => {
@@ -121,7 +122,7 @@ function exist_test(json) {
 // string pm tests for each key value pair
 function value_test(json) {
     let strArr = [];
-    let k = fix_f(f(json));      // key
+    let k = fix_f(json);      // key
     for(let i=0;i<k.length;i++)
     {
         let v = eval(`json${k[i]}`);
@@ -176,8 +177,8 @@ function value_test(json) {
 // use case examples
 //const et = exist_test(data);
 //et.forEach( (str) => { console.log(str); });
-const vt = value_test(data);
-vt.forEach( (str) => { console.log(str); });
+//const vt = value_test(data);
+//vt.forEach( (str) => { console.log(str); });
 
 // exports
 module.exports = {exist_test, value_test};
