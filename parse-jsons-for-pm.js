@@ -16,6 +16,8 @@ const isDate = (s) => isNaN(Number(s).toString())
     && !isNaN(Date.parse(s)) 
     && !isNaN(Number(Date.parse(s)).toString());
 
+const isNumber = (string) => Number(string).toString() != "NaN";
+
 
 // from https://codegolf.stackexchange.com/a/195480
 // returns list of jsonPaths
@@ -37,7 +39,7 @@ function fix_f(json){
         for(const addr of ar)
         {
                 // If its a number, add brackets, otherwise add a dot.
-                Number(addr).toString() != "NaN" ? newString.push(`[${addr}]`) : newString.push(`.${addr}`);
+                isNumber(addr) ? newString.push(`[${addr}]`) : newString.push(`.${addr}`);
         }
 
         // add to the array of new Paths
@@ -123,51 +125,51 @@ function exist_test(json) {
 function value_test(json) {
     let strArr = [];
     let k = fix_f(json);      // key
-    for(let i=0;i<k.length;i++)
+    for(const key of k)
     {
-        let v = eval(`json${k[i]}`);
+        let v = eval(`json${key}`);
         // split the path into pieces by .
-        let s = `${k[i]}`.split('.');
+        let s = `${key}`.split('.');
         // put all except the last back together
         let first = s.slice(0, s.length-1).join('.');
         let last = s[s.length-1];
 
         // if no children, remove the extra dot.
-        if(k[i].split('.').length == 1 && (v == null || typeof(v) == "object" || isDate(v)))
+        if(key.split('.').length == 1 && (v == null || typeof(v) == "object" || isDate(v)))
         {
                 // make the test
-                k[i].startsWith('[') ? 
-                    strArr.push(`pm.test('${k[i]}', () => {\
-                        \n\tpm.expect(response${k[i]}).to.exist;\n});`):
-                    strArr.push(`pm.test('${k[i]}', () => {\
-                        \n\tpm.expect(response).to.have.property('${k[i]}');\n});`);
+                key.startsWith('[') ? 
+                    strArr.push(`pm.test('${key}', () => {\
+                        \n\tpm.expect(response${key}).to.exist;\n});`):
+                    strArr.push(`pm.test('${key}', () => {\
+                        \n\tpm.expect(response).to.have.property('${key}');\n});`);
         }
 
         // if result is null or object or date
         else if(v == null || typeof(v) == "object" || isDate(v))
         {
             // make the test
-            k[i].startsWith('[') ? 
-                strArr.push(`pm.test('${k[i]}', () => {\
+            key.startsWith('[') ? 
+                strArr.push(`pm.test('${key}', () => {\
                     \n\tpm.expect(response${first}).to.have.property('${last}');\n});`):
-                strArr.push(`pm.test('${k[i]}', () => {\
+                strArr.push(`pm.test('${key}', () => {\
                     \n\tpm.expect(response.${first}).to.have.property('${last}');\n});`);
         }
         // if the value is not a String, remove the quotations
-        else if(Number(v[i]).toString() != "NaN")
+        else if(isNumber(v))
         {
-            k[i].startsWith('[') ?
-                strArr.push(`pm.test('${k[i]}', () => {\
+            key.startsWith('[') ?
+                strArr.push(`pm.test('${key}', () => {\
                     \n\tpm.expect(response${first}).to.have.property('${last}', ${v});\n});`):
-                strArr.push(`pm.test('${k[i]}', () => {\
+                strArr.push(`pm.test('${key}', () => {\
                     \n\tpm.expect(response.${first}).to.have.property('${last}', ${v});\n});`);
         }
         else
         {
-            k[i].startsWith('[') ?
-                strArr.push(`pm.test('${k[i]}', () => {\
+            key.startsWith('[') ?
+                strArr.push(`pm.test('${key}', () => {\
                     \n\tpm.expect(response${first}).to.have.property('${last}', '${v}');\n});`):
-                strArr.push(`pm.test('${k[i]}', () => {\
+                strArr.push(`pm.test('${key}', () => {\
                 \n\tpm.expect(response.${first}).to.have.property('${last}', '${v}');\n});`);
         }
     }
