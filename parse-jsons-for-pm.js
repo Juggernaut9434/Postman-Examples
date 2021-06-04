@@ -6,7 +6,7 @@
 //
 
 // pull json data from file
-const data = require('./example.json');
+const data = require('./my.test.json');
 
 
 // Returns boolean if it is a Date according to Javascript
@@ -64,9 +64,7 @@ function exist(json) {
 
         if(typeof(result) == "object" && result != null) 
         {
-            element.startsWith('[') ? 
-                strArr.push(`pm.expect(response${element}).to.exist;`) : 
-                strArr.push(`pm.expect(response.${element}).to.exist;`);
+            strArr.push(`pm.expect(response${element}).to.exist;`);
         } 
 
         // if result is null and not a child
@@ -96,9 +94,7 @@ function exist(json) {
             {
 
                 // make the test
-                element.startsWith('[') ? 
-                    strArr.push(`pm.expect(response${first}).to.have.property('${last}');`):
-                    strArr.push(`pm.expect(response.${first}).to.have.property('${last}');`);
+                strArr.push(`pm.expect(response.${first}).to.have.property('${last}');`);
             }
         } 
     } // out of for loop
@@ -149,36 +145,27 @@ function value_test(json) {
         else if(v == null || typeof(v) == "object" || isDate(v))
         {
             // make the test
-            key.startsWith('[') ? 
-                strArr.push(`pm.test('${key}', () => {\
-                    \n\tpm.expect(response${first}).to.have.property('${last}');\n});`):
-                strArr.push(`pm.test('${key}', () => {\
-                    \n\tpm.expect(response.${first}).to.have.property('${last}');\n});`);
+            strArr.push(`pm.test('${key}', () => {\
+                \n\tpm.expect(response${first}).to.have.property('${last}');\n});`);
         }
         // if the value is not a String, remove the quotations
         else if(isNumber(v))
         {
-            key.startsWith('[') ?
-                strArr.push(`pm.test('${key}', () => {\
-                    \n\tpm.expect(response${first}).to.have.property('${last}', ${v});\n});`):
-                strArr.push(`pm.test('${key}', () => {\
-                    \n\tpm.expect(response.${first}).to.have.property('${last}', ${v});\n});`);
+            strArr.push(`pm.test('${key}', () => {\
+                \n\tpm.expect(response${first}).to.have.property('${last}', ${v});\n});`);
         }
         else
         {
-            key.startsWith('[') ?
-                strArr.push(`pm.test('${key}', () => {\
-                    \n\tpm.expect(response${first}).to.have.property('${last}', '${v}');\n});`):
-                strArr.push(`pm.test('${key}', () => {\
-                \n\tpm.expect(response.${first}).to.have.property('${last}', '${v}');\n});`);
+            strArr.push(`pm.test('${key}', () => {\
+                \n\tpm.expect(response${first}).to.have.property('${last}', '${v}');\n});`);
         }
     }
     return strArr;
 }
 
 // use case examples
-//const et = exist_test(data);
-//et.forEach( (str) => { console.log(str); });
+const et = exist_test(data);
+et.forEach( (str) => { console.log(str); });
 //const vt = value_test(data);
 //vt.forEach( (str) => { console.log(str); });
 
